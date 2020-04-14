@@ -107,7 +107,7 @@ def clara(_runs, _data, _k, _fn, _niter):
         sampling_idx = random.sample([i for i in range(size)], (40 + _k * 2))
         sampling_data = []
         for idx in sampling_idx:
-            sampling_data.append(_data.iloc[idx])
+            sampling_data.append(_data[idx])
 
         pre_cost, pre_choice, pre_medoids = k_medoids(sampling_data, _k, _fn, 1000)
         tmp_avg_cost, tmp_medoids = compute_cost(_data, _fn, pre_choice)
