@@ -10,23 +10,23 @@ def euclid(x, y):
     return np.linalg.norm(x - y)
 
 
-def k_medoids(_data, _k, _fn, _niter):
+def k_medoids(data, k, fn, niter):
     """
-            :param _df: Input data frame.
-            :param _k: Number of medoids.
-            :param _fn: The distance function to use.
-            :param _niter: The number of iterations.
-            :return: Cluster label.
+            :param df: Input data frame.
+            :param k: Number of medoids.
+            :param fn: The distance function to use.
+            :param niter: The number of iterations.
+            :return: Cur cost, Medoids choice, Cluster label.
     """
-    size = len(_data)
-    medoids_sample = random.sample([i for i in range(size)], _k)
-    prior_cost, medoids = compute_cost(_data, _fn, medoids_sample)
+    size = len(data)
+    medoids_sample = random.sample([i for i in range(size)], k)
+    prior_cost, medoids = compute_cost(data, fn, medoids_sample)
     current_cost = prior_cost
     iter_count = 0
     best_choices = []
     best_results = {}
 
-    while iter_count < _niter:
+    while iter_count < niter:
         for m in medoids:
             clust_iter = 0
             for item in medoids[m]:
@@ -34,7 +34,7 @@ def k_medoids(_data, _k, _fn, _niter):
                     idx = medoids_sample.index(m)
                     swap_temp = medoids_sample[idx]
                     medoids_sample[idx] = item
-                    tmp_cost, tmp_medoids = compute_cost(_data, _fn, medoids_sample)
+                    tmp_cost, tmp_medoids = compute_cost(data, fn, medoids_sample)
                     if (tmp_cost < current_cost) & (clust_iter < 1):
                         best_choices = list(medoids_sample)
                         best_results = dict(tmp_medoids)
@@ -55,10 +55,10 @@ def k_medoids(_data, _k, _fn, _niter):
             medoids = best_results
             medoids_sample = best_choices
 
-    return size
+    return current_cost, medoids_sample, medoids
 
 
-def compute_cost(_data, _fn, _cur_choice):
+def compute_cost(data, fn, cur_choice):
         """
         :param _data: The input data frame.
         :param _fn: The distance function.
@@ -66,10 +66,10 @@ def compute_cost(_data, _fn, _cur_choice):
         :param cache_on: Binary flag to turn caching.
         :return: The total configuration cost, the mediods.
         """
-        size = len(_data)
+        size = len(data)
         total_cost = 0.0
         medoids = {}
-        for idx in _cur_choice:
+        for idx in cur_choice:
             medoids[idx] = []
 
         for i in range(size):
@@ -77,7 +77,7 @@ def compute_cost(_data, _fn, _cur_choice):
             min_cost = np.inf
             for m in medoids:
 
-                tmp = _fn(_data[m], _data[i])
+                tmp = fn(data[m], data[i])
 
                 if tmp < min_cost:
                     choice = m
@@ -89,28 +89,28 @@ def compute_cost(_data, _fn, _cur_choice):
         return total_cost, medoids
 
 
-def clara(_runs, _data, _k, _fn, _niter):
+def clara(runs, data, k, fn, niter):
     """
-    :param _runs: Clara algo runs
-    :param _data: Input data frame.
-    :param _k: Number of medoids.
-    :param _fn: The distance function to use.
-    :param _niter: number of k_medoid iters
-    :return: The minimized cost, the best medoid choices and the final configuration.
+    :param runs: Clara algo runs
+    :param data: Input data frame.
+    :param k: Number of medoids.
+    :param fn: The distance function to use.
+    :param niter: number of k_medoid iters
+    :return: the best medoid choices and the final configuration.
     """
-    size = len(_data)
+    size = len(data)
     min_avg_cost = np.inf
     best_choices = []
     best_results = {}
 
-    for j in range(_runs):
-        sampling_idx = random.sample([i for i in range(size)], (40 + _k * 2))
+    for j in range(runs):
+        sampling_idx = random.sample([i for i in range(size)], (40 + k * 2))
         sampling_data = []
         for idx in sampling_idx:
-            sampling_data.append(_data[idx])
+            sampling_data.append(data[idx])
 
-        pre_cost, pre_choice, pre_medoids = k_medoids(sampling_data, _k, _fn, 1000)
-        tmp_avg_cost, tmp_medoids = compute_cost(_data, _fn, pre_choice)
+        pre_cost, pre_choice, pre_medoids = k_medoids(sampling_data, k, fn, 1000)
+        tmp_avg_cost, tmp_medoids = compute_cost(data, fn, pre_choice)
         tmp_avg_cost /= len(tmp_medoids)
         if tmp_avg_cost <= min_avg_cost:
             min_avg_cost = tmp_avg_cost
