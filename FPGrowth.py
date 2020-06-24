@@ -76,13 +76,15 @@ class FPTree(object):
         return paths
 
     def items(self):
+        items = []
         for item in self.routes.iterkeys():
             nodes = []
             node = self.routes[item][0]
             while node:
                 nodes.append(node)
                 node = node.neighbor
-            yield item, nodes
+            items.append((item, nodes))
+        return items
 
 
 
@@ -129,12 +131,12 @@ def fpgrowth(transactions, minimum_support):
     popular_itemset = []
 
     def find_with_suffix(tree, suffix):
-        for item, nodes in tree.items():
+        for elem, nodes in tree.items():
             support = sum(n.count for n in nodes)
-            if support >= minimum_support and item not in suffix:
-                found_set = [item] + suffix
+            if support >= minimum_support and elem not in suffix:
+                found_set = [elem] + suffix
                 yield found_set
-                cond_tree = build_cond_tree(tree.prefix_paths(item))
+                cond_tree = build_cond_tree(tree.prefix_paths(elem))
                 for s in find_with_suffix(cond_tree, found_set):
                     yield s
 
