@@ -12,7 +12,7 @@ def euclid(x, y):
 
 def k_medoids(data, k, fn, niter):
     """
-            :param df: Input data frame.
+            :param data: Input data frame.
             :param k: Number of medoids.
             :param fn: The distance function to use.
             :param niter: The number of iterations.
@@ -60,10 +60,9 @@ def k_medoids(data, k, fn, niter):
 
 def compute_cost(data, fn, cur_choice):
         """
-        :param _data: The input data frame.
-        :param _fn: The distance function.
-        :param _cur_choice: The current set of medoid choices.
-        :param cache_on: Binary flag to turn caching.
+        :param data: The input data frame.
+        :param fn: The distance function.
+        :param cur_choice: The current set of medoid choices.
         :return: The total configuration cost, the mediods.
         """
         size = len(data)
@@ -89,7 +88,7 @@ def compute_cost(data, fn, cur_choice):
         return total_cost, medoids
 
 
-def clara(runs, data, k, fn, niter):
+def clara(runs, data, k, fn=euclid, niter=1000):
     """
     :param runs: Clara algo runs
     :param data: Input data frame.
@@ -104,12 +103,12 @@ def clara(runs, data, k, fn, niter):
     best_results = {}
 
     for j in range(runs):
-        sampling_idx = random.sample([i for i in range(size)], (40 + k * 2))
+        sampling_idx = random.sample([i for i in range(size)], (int(size / 1000) + k * 2))
         sampling_data = []
         for idx in sampling_idx:
             sampling_data.append(data[idx])
 
-        pre_cost, pre_choice, pre_medoids = k_medoids(sampling_data, k, fn, 1000)
+        pre_cost, pre_choice, pre_medoids = k_medoids(sampling_data, k, fn, niter)
         tmp_avg_cost, tmp_medoids = compute_cost(data, fn, pre_choice)
         tmp_avg_cost /= len(tmp_medoids)
         if tmp_avg_cost <= min_avg_cost:
