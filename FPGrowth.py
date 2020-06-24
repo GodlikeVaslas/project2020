@@ -111,7 +111,7 @@ def build_cond_tree(paths):
     return cond_tree
 
 
-def find_frequent_itemsets(transactions, minimum_support):
+def fpgrowth(transactions, minimum_support):
     items = defaultdict(lambda: 0)
     for transaction in transactions:
         for item in transaction:
