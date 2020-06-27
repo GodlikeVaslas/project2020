@@ -55,7 +55,7 @@ def k_medoids(data, k, fn, niter):
             medoids = best_results
             medoids_sample = best_choices
 
-    return current_cost, medoids_sample, medoids
+    return medoids_sample, medoids
 
 
 def compute_cost(data, fn, cur_choice):
@@ -98,21 +98,20 @@ def clara(runs, data, k, fn=euclid, niter=1000):
     :return: the best medoid choices and the final configuration.
     """
     size = len(data)
-    min_avg_cost = np.inf
+    min_cost = np.inf
     best_choices = []
     best_results = {}
 
     for j in range(runs):
-        sampling_idx = random.sample([i for i in range(size)], (int(size / 1000) + k * 2))
+        sampling_idx = random.sample([i for i in range(size)], (int(size/1000) + k * 2))
         sampling_data = []
         for idx in sampling_idx:
             sampling_data.append(data[idx])
-
-        pre_cost, pre_choice, pre_medoids = k_medoids(sampling_data, k, fn, niter)
-        tmp_avg_cost, tmp_medoids = compute_cost(data, fn, pre_choice)
-        tmp_avg_cost /= len(tmp_medoids)
-        if tmp_avg_cost <= min_avg_cost:
-            min_avg_cost = tmp_avg_cost
+        pre_choice, pre_medoids = k_medoids(sampling_data, k, fn, niter)
+        tmp_cost, tmp_medoids = compute_cost(data, fn, pre_choice)
+        tmp_cost /= len(tmp_medoids)
+        if tmp_cost <= min_cost:
+            min_cost = tmp_cost
             best_choices = list(pre_choice)
             best_results = dict(tmp_medoids)
 
