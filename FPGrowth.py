@@ -146,11 +146,8 @@ def fpgrowth(transactions, minimum_support):
         for item in transaction:
             items[item] += 1
 
-    items = dict((item, support) for item, support in items.items() if support >= minimum_support)
-
     master = FPTree()
     for transaction in transactions:
-        transaction = list(filter(lambda v: v in items, transaction))
         transaction.sort(key=lambda v: items[v], reverse=True)
         master.add(transaction)
     popular_itemset = []
