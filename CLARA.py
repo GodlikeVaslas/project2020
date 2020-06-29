@@ -40,10 +40,6 @@ def k_medoids(data, k, fn, niter):
                         best_results = dict(tmp_medoids)
                         current_cost = tmp_cost
                         clust_iter += 1
-                    else:
-                        best_choices = best_choices
-                        best_results = best_results
-                        current_cost = current_cost
                     medoids_sample[idx] = swap_temp
 
         iter_count += 1

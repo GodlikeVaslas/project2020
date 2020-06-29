@@ -112,6 +112,10 @@ class FPTree:
 
 
 def build_cond_tree(paths):
+    """
+            :param paths: list of paths
+            :return: neww tree built using paths (cond tree)
+    """
     cond_tree = FPTree()
     condition_item = None
     items = set()
@@ -141,6 +145,11 @@ def build_cond_tree(paths):
 
 
 def fpgrowth(transactions, minimum_support):
+    """
+            :param transactions: Input data.
+            :param minimum_support: The minimal_support.
+            :return: popular itemset for input list of transactions
+    """
     items = defaultdict(lambda: 0)
     for transaction in transactions:
         for item in transaction:
